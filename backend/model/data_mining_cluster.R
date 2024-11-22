@@ -37,7 +37,6 @@ if (!require(proxy)) {
   library(proxy)
 }
 
-# 7. 使用vegdist计算列之间的Jaccard距离
 # 转置数据，使得计算的是列之间的距离
 distance_matrix <- dist(t(data_to_cluster), method = "phi")
 

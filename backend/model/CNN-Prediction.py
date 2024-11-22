@@ -7,16 +7,26 @@ from sklearn.metrics import f1_score, accuracy_score
 from torch.utils.data import DataLoader, TensorDataset
 import torch.nn.functional as F
 import numpy as np
+import argparse
+from torchviz import make_dot
+
+parser = argparse.ArgumentParser(description="Parse command line arguments")
+parser.add_argument("--random", action="store_true", help="Set random to True")
+args = parser.parse_args()
+random = args.random
 
 # # 读取并预处理数据
-# train_df = pd.read_csv("Train_Reordered_Mentalillness.csv")
-# val_df = pd.read_csv("Validation_Reordered_Mentalillness.csv")
-# test_df = pd.read_csv("Test_Reordered_Mentalillness.csv")
 
-# 读取并预处理数据
 train_df = pd.read_csv("Train_Mentalillness.csv")
 val_df = pd.read_csv("Validation_Mentalillness.csv")
 test_df = pd.read_csv("Test_Mentalillness.csv")
+
+if random:
+    # 读取并预处理数据
+    train_df = pd.read_csv("Train_Reordered_Mentalillness.csv")
+    val_df = pd.read_csv("Validation_Reordered_Mentalillness.csv")
+    test_df = pd.read_csv("Test_Reordered_Mentalillness.csv")
+
 
 # 排除 ID 列
 train_df = train_df.drop(columns=["ID"])
@@ -25,11 +35,11 @@ test_df = test_df.drop(columns=["ID"])
 
 # 定义心理疾病列和症状列
 mental_diseases = [
-    "PTSD",
     "Bipolar disorder",
+    "Schizophrenia",
     "Depression",
     "Anxiety disorder",
-    "Schizophrenia",
+    "PTSD",
 ]
 symptom_columns = [col for col in train_df.columns if col not in mental_diseases]
 
@@ -129,7 +139,7 @@ def train_model(
     optimizer,
     scheduler,
     num_epochs=30,
-    patience=6,
+    patience=5,
 ):
     best_val_loss = float("inf")
     patience_counter = 0
@@ -207,124 +217,13 @@ def test_model(model, test_loader):
     print(f"Average Accuracy: {np.mean(accuracies):.4f}")
 
 
+X_batch, _ = next(iter(test_loader))
+make_dot(model(X_batch), params=dict(model.named_parameters())).render(
+    "MultiLabelCNN", format="png"
+)
 # 在测试集上评估模型
 test_model(model, test_loader)
-
-# def preprocess_input(input_data, symptom_columns):
-#     """
-#     将输入的症状数组转换为固定长度的症状向量。
-#     - input_data: 用户输入的症状数组 [{"name": str, "value": bool}]
-#     - symptom_columns: 预定义的45个症状名称列表
-#     """
-#     # 初始化症状向量，默认值为0
-#     symptom_vector = np.zeros(len(symptom_columns), dtype=np.float32)
-
-#     # 将输入数据映射到症状向量
-#     for symptom in input_data:
-#         if symptom["name"] in symptom_columns:
-#             idx = symptom_columns.index(symptom["name"])
-#             symptom_vector[idx] = 1.0 if symptom["value"] else 0.0
-
-#     # 转换为 PyTorch Tensor，并调整维度以匹配模型输入
-#     return torch.tensor(symptom_vector, dtype=torch.float32).unsqueeze(0).unsqueeze(2)
-
-
-# def predict(input_data, model, symptom_columns):
-#     # 预处理输入数据
-#     input_tensor = preprocess_input(input_data, symptom_columns)
-
-#     # 预测
-#     with torch.no_grad():
-#         outputs = model(input_tensor)
-#         predictions = (outputs > 0.5).float().numpy()  # 0.5 阈值
-
-#     # 返回预测结果
-#     return {
-#         disease: bool(predictions[0][i]) for i, disease in enumerate(mental_diseases)
-#     }
-
-
-# if True:
-#     input_data = [
-#         {"name": "Symptom1", "value": True},
-#         {"name": "Symptom5", "value": False},
-#         {"name": "Symptom10", "value": True},
-#     ]
-
-#     symptom_columns = [
-#         "Symptom1",
-#         "Symptom2",
-#         "Symptom3",
-#         "Symptom4",
-#         "Symptom5",
-#         "Symptom6",
-#         "Symptom7",
-#         "Symptom8",
-#         "Symptom9",
-#         "Symptom10",
-#         "Symptom11",
-#         "Symptom12",
-#         "Symptom13",
-#         "Symptom14",
-#         "Symptom15",
-#         "Symptom16",
-#         "Symptom17",
-#         "Symptom18",
-#         "Symptom19",
-#         "Symptom20",
-#         "Symptom21",
-#         "Symptom22",
-#         "Symptom23",
-#         "Symptom24",
-#         "Symptom25",
-#         "Symptom26",
-#         "Symptom27",
-#         "Symptom28",
-#         "Symptom29",
-#         "Symptom30",
-#         "Symptom31",
-#         "Symptom32",
-#         "Symptom33",
-#         "Symptom34",
-#         "Symptom35",
-#         "Symptom36",
-#         "Symptom37",
-#         "Symptom38",
-#         "Symptom39",
-#         "Symptom40",
-#         "Symptom41",
-#         "Symptom42",
-#         "Symptom43",
-#         "Symptom44",
-#         "Symptom45",
-#     ]
-
-#     # 加载模型
-#     model = MultiLabelCNN(
-#         input_size=1,
-#         output_size=5,
-#         num_features=45,
-#         level=2,
-#     )
-#     model.load_state_dict(torch.load("cnn_multi_target_prediction_model.bin"))
-#     model.eval()
-
-#     # 获取预测结果
-#     predicted_results = predict(input_data, model, symptom_columns)
-
-#     # 输出预测结果
-#     print("Prediction Results:")
-#     for disease, predicted in predicted_results.items():
-#         print(f"{disease}: {'Yes' if predicted else 'No'}")
-
-
-# if False:
-#     model = torch.load("cnn_multi_target_prediction_model.pth")
-#     # 使用 TorchScript 脚本化模型
-#     scripted_model = torch.jit.script(model)
-
-#     # 保存脚本化模型
-#     scripted_model.save("cnn_model_scripted.pt")
-
-
-# torch.save(model.state_dict(), "cnn_multi_target_prediction_model.bin")
+# torch.save(
+#     model.state_dict(),
+#     f"cnn_multi_target_prediction_model_{'random' if random else 'hierarchy'}.bin",
+# )

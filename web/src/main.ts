@@ -5,10 +5,12 @@ import App from './App.vue'
 
 import routes from './route/index'
 
+import { indexedDBPlugin } from './store/indexedDBPlugin'
 import './styles/main.css'
 import './styles/fonts.css'
 
 const pinia = createPinia()
+pinia.use(indexedDBPlugin)
 const app = createApp(App)
 const router = createRouter({
   routes,

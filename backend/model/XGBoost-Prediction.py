@@ -18,11 +18,11 @@ test_df = test_df.drop(columns=["ID"])
 
 # 定义心理疾病列和症状列
 mental_diseases = [
-    "PTSD",
     "Bipolar disorder",
+    "Schizophrenia",
     "Depression",
     "Anxiety disorder",
-    "Schizophrenia",
+    "PTSD",
 ]
 symptom_columns = [col for col in train_df.columns if col not in mental_diseases]
 
@@ -80,4 +80,7 @@ evaluate_model(y_val, y_val_pred, mental_diseases)
 print("\nTest Results:")
 evaluate_model(y_test, y_test_pred, mental_diseases)
 
-# joblib.dump(multi_target_model, "xgb_multi_target_prediction_model.pkl")
+joblib.dump(
+    {"model": multi_target_model, "diseases": mental_diseases},
+    "xgb_multi_target_prediction_model.bin",
+)

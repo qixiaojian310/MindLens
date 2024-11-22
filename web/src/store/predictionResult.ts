@@ -1,15 +1,5 @@
 import { defineStore } from 'pinia'
-
-interface PredictionResult{
-  model: 'cnn' | 'xgb'
-  result: {
-    BipolarDisorder: number
-    Depression: number
-    AnxietyDisorder: number
-    Schizophrenia: number
-    PTSD: number
-  }
-}
+import type { PredictionResult } from '~/types/result'
 
 interface PredictionState{
   results: PredictionResult[]

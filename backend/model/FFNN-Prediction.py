@@ -19,11 +19,11 @@ test_df = test_df.drop(columns=["ID"])
 
 # 定义心理疾病列和症状列
 mental_diseases = [
-    "PTSD",
     "Bipolar disorder",
+    "Schizophrenia",
     "Depression",
     "Anxiety disorder",
-    "Schizophrenia",
+    "PTSD",
 ]
 symptom_columns = [col for col in train_df.columns if col not in mental_diseases]
 
@@ -178,3 +178,4 @@ def test_model(model, test_loader):
 
 # 在测试集上评估模型
 test_model(model, test_loader)
+torch.save(model.state_dict(), "ffnn_multi_target_prediction_model.bin")

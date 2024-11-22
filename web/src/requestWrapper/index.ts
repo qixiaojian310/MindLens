@@ -1,3 +1,5 @@
+import { useSymptomStore } from '~/store/symptom'
+
 const baseReqURL = 'http://localhost:8000/api'
 
 interface Symptom {

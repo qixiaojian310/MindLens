@@ -1,92 +1,107 @@
 <script setup lang="ts">
-import * as echarts from 'echarts'
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons-vue'
+import { usePredictionResultStore } from '~/store/predictionResult'
+import { modelEval } from '~/types/model'
 
-const chartCOntainerRef = ref<HTMLDivElement | null>(null)
-const predictionChartRef = ref<echarts.ECharts | null>(null)
-type EChartsOption = echarts.EChartsOption
-
-const option: EChartsOption = {
-  color: ['#FF917C'],
-  title: {
-    text: 'Customized Radar Chart',
-  },
-  legend: {},
-  radar: [
-    {
-      indicator: [
-        { text: 'Indicator1', max: 150 },
-        { text: 'Indicator2', max: 150 },
-        { text: 'Indicator3', max: 150 },
-        { text: 'Indicator4', max: 120 },
-        { text: 'Indicator5', max: 108 },
-      ],
-      center: ['75%', '50%'],
-      axisName: {
-        color: '#fff',
-        backgroundColor: '#666',
-        borderRadius: 3,
-        padding: [3, 5],
-      },
-    },
-  ],
-  series: [
-    {
-      type: 'radar',
-      radarIndex: 0,
-      data: [
-        {
-          value: [120, 118, 130, 100, 99],
-          name: 'Data C',
-          symbol: 'rect',
-          symbolSize: 12,
-          lineStyle: {
-            type: 'dashed',
-          },
-          label: {
-            show: true,
-            formatter(params: any) {
-              return params.value as string
-            },
-          },
-        },
-      ],
-      areaStyle: {
-        opacity: 0.1,
-      },
-    },
-  ],
-}
-function resizeChart(chart: echarts.ECharts) {
-  chart.resize()
-}
-
-onMounted(() => {
-  const chartDom = chartCOntainerRef.value
-  if (chartDom && option){
-    predictionChartRef.value = echarts.init(chartDom)
-    predictionChartRef.value.setOption(option)
-    window.addEventListener('resize', () => {
-      resizeChart(predictionChartRef.value as echarts.ECharts)
-    })
-  }
-})
-onUnmounted(() => {
-  window.removeEventListener('resize', () => {
-    resizeChart(predictionChartRef.value as echarts.ECharts)
-  })
-  predictionChartRef.value?.dispose()
-})
+const integrateRadar = ref(false)
+const justShowCNN = ref(false)
+const predictionStore = usePredictionResultStore()
 </script>
 
 <template>
-  <div ref="chartCOntainerRef" class="chartContainer" />
+  <div class="final">
+    <div class="switchBox">
+      <a-switch v-model:checked="integrateRadar">
+        <template #checkedChildren>
+          <div class="switchInner">
+            <p>Integrate Radar</p>
+            <CheckOutlined />
+          </div>
+        </template>
+        <template #unCheckedChildren>
+          <div class="switchInner">
+            <p>Segregate Radar</p>
+            <CloseOutlined />
+          </div>
+        </template>
+      </a-switch>
+      <a-switch v-if="integrateRadar" v-model:checked="justShowCNN">
+        <template #checkedChildren>
+          <div class="switchInner">
+            <p>Show Your Risk</p>
+            <CheckOutlined />
+          </div>
+        </template>
+        <template #unCheckedChildren>
+          <div class="switchInner">
+            <p>Show Your Risk</p>
+            <CloseOutlined />
+          </div>
+        </template>
+      </a-switch>
+    </div>
+    <div class="resultBox">
+      <div v-if="integrateRadar" class="radarIntegrateContainer">
+        <ResultShow :result="justShowCNN ? predictionStore.results[0] : predictionStore.results" />
+      </div>
+      <div v-for="(result) in predictionStore.results" v-else :key="result.key" class="radarSegContainer">
+        <ResultShow :result="result" />
+      </div>
+    </div>
+    <div class="evalBox">
+      <EvalShow :data="modelEval.map((item) => { return item.F1Score })" />
+      <EvalShow :data="modelEval.map((item) => { return item.Accuracy })" />
+    </div>
+  </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+.final {
+  height: 100%;
+  display: flex;
+  position: relative;
+  .switchBox {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 13px;
+    top: 5px;
+    left: 10px;
+    position: absolute;
+    z-index: 100;
+  }
+}
 .chartContainer {
   position: relative;
   height: 100%;
   width: 100%;
   overflow: hidden;
+}
+.resultBox {
+  height: 100%;
+  width: 60%;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+}
+.evalBox {
+  height: 100%;
+  width: 40%;
+}
+.radarSegContainer {
+  width: 50%;
+  height: 50%;
+}
+.radarIntegrateContainer {
+  width: 100%;
+  height: 100%;
+}
+.switchInner {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  p {
+    margin: 0;
+  }
 }
 </style>
