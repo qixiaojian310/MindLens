@@ -1,0 +1,38 @@
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+html.dark {
+  background: #121212;
+}
+html.light {
+  background: #F9E6CD;
+}
+.custom-class.ant-drawer-content{
+  background: #cebda4;
+}
+
+/* 针对 WebKit 浏览器（Chrome, Safari 等） */
+::-webkit-scrollbar {
+  width: 6px; /* 滑块宽度 */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* 设置滑轨为透明 */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #535353; /* 设置滑块的颜色 */
+  border-radius: 3px; /* 滑块圆角 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1d1d1d; /* 悬停时的滑块颜色 */
+}
+
+
