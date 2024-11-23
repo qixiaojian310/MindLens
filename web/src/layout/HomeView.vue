@@ -71,6 +71,7 @@ toggleDark(false)
   width: 100%;
 }
 .title {
+  user-select: none;
   text-align: center;
   font-family: NerkoOne;
   font-weight: 900;
@@ -88,7 +89,7 @@ toggleDark(false)
     color: #fff;
     font-size: 40px;
     background: #ff6b6b;
-    box-shadow: 0 0 30px 10px #ff6b6b;
+    box-shadow: 0 0 0px 0px #ff6b6b;
     border-radius: 10px;
     animation: breathing 2s infinite; /* 添加动画 */
     @media (max-width: 500px) {
@@ -99,10 +100,10 @@ toggleDark(false)
 @keyframes breathing {
   0%,
   100% {
-    box-shadow: 0 0 30px 10px rgba(255, 107, 107, 0.8); /* 初始状态 */
+    box-shadow: 0 0 0px 0px rgba(255, 107, 107, 0.8); /* 初始状态 */
   }
   50% {
-    box-shadow: 0 0 50px 20px rgba(255, 107, 107, 0.4); /* 呼吸扩展状态 */
+    box-shadow: 0 0 20px 10px rgba(255, 107, 107, 0.4); /* 呼吸扩展状态 */
   }
 }
 </style>

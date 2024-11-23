@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeftOutlined, BarsOutlined, CheckOutlined, CloseOutlined, HistoryOutlined } from '@ant-design/icons-vue'
+import { ArrowLeftOutlined, BarsOutlined, CheckOutlined, CloseOutlined, DeleteOutlined, HistoryOutlined } from '@ant-design/icons-vue'
 import { Avatar, BadgeRibbon, Button, Divider, Drawer, Input, Modal, Switch } from 'ant-design-vue'
 import { v4 as uuidv4 } from 'uuid'
 import LOGO from '~/components/LOGO.vue'
@@ -75,6 +75,10 @@ async function evalHistory(newHistory: History | undefined){
   }
 }
 
+function deleteHistory(history: HistoriesItem){
+  symptomStore.deleteHistories(history.key)
+}
+
 const newTempHistory = computed(() => {
   return {
     history: symptomStore.newHistory,
@@ -117,15 +121,20 @@ const newTempHistory = computed(() => {
         <template v-if="!showHistoryDetail">
           <div v-for="history in symptomStore.histories" :key="history.key" @click="loadHistory(history, false)">
             <div class="historyItem">
-              <Avatar :icon="h(HistoryOutlined)" shape="square" />
-              <p>{{ history.name }}</p>
+              <div class="historyItemContent">
+                <Avatar :icon="h(HistoryOutlined)" shape="square" />
+                <p>{{ history.name }}</p>
+              </div>
+              <Button :icon="h(DeleteOutlined)" type="primary" danger @click.stop="deleteHistory(history)" />
             </div>
           </div>
           <BadgeRibbon text="Unsubmitted" color="red">
             <div @click="loadHistory(newTempHistory, true)">
               <div class="historyItem">
-                <Avatar :icon="h(HistoryOutlined)" shape="square" />
-                <p>{{ newTempHistory.name }}</p>
+                <div class="historyItemContent">
+                  <Avatar :icon="h(HistoryOutlined)" shape="square" />
+                  <p>{{ newTempHistory.name }}</p>
+                </div>
               </div>
             </div>
           </BadgeRibbon>
@@ -199,9 +208,14 @@ const newTempHistory = computed(() => {
   p {
     font-size: 15px;
   }
+  .historyItemContent {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
   margin-bottom: 14px;
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
   align-items: center;
   border: 1px solid #fff;
   border-radius: 5px;
