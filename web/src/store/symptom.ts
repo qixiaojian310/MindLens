@@ -21,10 +21,10 @@ export const useSymptomStore = defineStore('symptom', {
       const key = uuidv4()
       this.histories.push({ history, name, key })
     },
-    deleteHistories(index: number){
-      if (index >= 0 && index < this.histories.length){
-        this.histories.splice(index, 1)
-      }
+    deleteHistories(key: string){
+      this.histories = this.histories.filter((history) => {
+        return history.key !== key
+      })
     },
     clearHistories(){
       this.histories = []

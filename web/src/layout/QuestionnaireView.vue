@@ -161,6 +161,7 @@ onMounted(() => {
     }
   }
   .questionContent {
+    user-select: none;
     overflow: auto;
     height: 100%;
     padding: 0 0px;
