@@ -1,6 +1,6 @@
 import { useSymptomStore } from '~/store/symptom'
 
-const baseReqURL = 'http://localhost:8000/api'
+const baseReqURL = import.meta.env.VITE_BACK_BASE_URL
 
 interface Symptom {
   name: string
